@@ -48,6 +48,9 @@ pub enum SecpCommand {
 
     /// Addition of two numbers from F_p field
     Add { scalar1: secp256k1::SecretKey, scalart2: secp256k1::SecretKey },
+
+    /// Invert (modulo-invert) scalar value
+    Inv { scalar: secp256k1::SecretKey },
 }
 
 impl Exec for SecpCommand {
@@ -89,6 +92,10 @@ impl Exec for SecpCommand {
             SecpCommand::Add { mut scalar1, scalart2: scalar2 } => {
                 scalar1.add_assign(&scalar2[..])?;
                 scalar1.to_string()
+            }
+            SecpCommand::Inv { mut scalar } => {
+                scalar.negate_assign();
+                scalar.to_string()
             }
         })
     }
