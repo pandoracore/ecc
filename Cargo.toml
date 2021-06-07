@@ -1,0 +1,18 @@
+[package]
+name = "ecc"
+version = "0.1.0"
+license = "MIT"
+authors = ["Dr. Maxim Orlovsky <orlovsky@pandoracore.com>"]
+description = "Elliptic curve cryptography command-line utility"
+repository = "https://github.com/pandoracore/ecc"
+keywords = ["lnp-bp", "cryptocurrency", "smart-contracts", "blockchain"]
+categories = ["cryptography"]
+readme = "README.md"
+edition = "2018"
+exclude = [".github"]
+
+[dependencies]
+secp256k1 = { version = "0.20.2", features = ["rand", "rand-std"] }
+bitcoin_hashes = "0.9.6"
+ed25519-dalek = "1.0.1"
+x25519-dalek = "1.1.1"
