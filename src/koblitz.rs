@@ -29,6 +29,14 @@ pub enum SecpCommand {
         even: bool,
     },
 
+    /// Generates new number from the field F_p and the matching elliptic curve
+    /// point, printing both to the standard output
+    NewPair {
+        /// Generate number that will match even EC point value
+        #[clap(short, long)]
+        even: bool,
+    },
+
     /// Scalar multiplication on generator point `G`
     Mul { scalar: secp256k1::SecretKey },
 
@@ -56,15 +64,26 @@ impl Exec for SecpCommand {
                      implemented in Secp256k1 library"
                 );
             }
+            SecpCommand::NewPair { even: false } => {
+                let sk = SecretKey::new(&mut thread_rng());
+                let pk = PublicKey::from_secret_key(&secp, &sk);
+                format!("{}\n{}", sk, pk)
+            }
+            SecpCommand::NewPair { even: true } => {
+                let _ = KeyPair::new(&secp, &mut thread_rng());
+                unimplemented!(
+                    "Generation of even-only keys is not yet fully \
+                     implemented in Secp256k1 library"
+                );
+            }
             SecpCommand::Mul { scalar } => {
                 PublicKey::from_secret_key(&secp, scalar).to_string()
             }
-            SecpCommand::Exp { mut point1, point2 } => {
-                point1.add_exp_assign(&secp, &point2.serialize())?;
-                point1.to_string()
+            SecpCommand::Exp { point1, point2 } => {
+                point1.combine(&point2)?.to_string()
             }
             SecpCommand::AddExp { mut point, scalar } => {
-                point.mul_assign(&secp, &scalar[..])?;
+                point.add_exp_assign(&secp, &scalar[..])?;
                 point.to_string()
             }
             SecpCommand::Add { mut scalar1, scalart2: scalar2 } => {
